@@ -47,6 +47,13 @@ namespace AOC
                         Console.WriteLine("{0}", dayFour.PartTwo());
                         break;
                     }
+                case 5:
+                    {
+                        var dayFive = new HydrothermalVenture(basePath + "5.txt");
+                        Console.WriteLine("{0}", dayFive.PartOne());
+                        Console.WriteLine("{0}", dayFive.PartTwo());
+                        break;
+                    }
 
                 default:
                     {

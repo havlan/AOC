@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections;
+using System.IO;
 
 namespace AOC
 {
@@ -9,8 +10,9 @@ namespace AOC
     {
         static void Main(string[] args)
         {
-
-            const string basePath = @"C:\Users\havar\Home\AOC2021\input\";
+            string directory = Directory.GetCurrentDirectory();
+            string dataDir = "\\input\\";
+            string basePath = string.Format("{0}{1}", directory, dataDir);
 
             var day = args.Length > 0 ? int.Parse(args[0]) : DateTime.Now.Day;
 
@@ -52,6 +54,13 @@ namespace AOC
                         var dayFive = new HydrothermalVenture(basePath + "5.txt");
                         Console.WriteLine("{0}", dayFive.PartOne());
                         Console.WriteLine("{0}", dayFive.PartTwo());
+                        break;
+                    }
+                case 6:
+                    {
+                        var daySix = new Lanternfish(basePath + "6.txt");
+                        Console.WriteLine("{0}", daySix.PartOne());
+                        Console.WriteLine("{0}", daySix.PartTwo());
                         break;
                     }
 

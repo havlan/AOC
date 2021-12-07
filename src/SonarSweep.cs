@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace AOC
 {
-    public class SonarSweep
+    public class SonarSweep : ISolver
     {
         private readonly string filename;
         private List<int> data;
@@ -30,12 +30,12 @@ namespace AOC
             return data;
         }
 
-        public int PartOne()
+        public void PartOne()
         {
-            return data.Select((value, idx) => new { value, idx }).Count(s => s.idx > 0 && s.value > data[s.idx - 1]);
+            Console.WriteLine("{0}", data.Select((value, idx) => new { value, idx }).Count(s => s.idx > 0 && s.value > data[s.idx - 1]));
         }
 
-        public int PartTwo()
+        public void PartTwo()
         {
             var previousWindow = int.MaxValue;
             var currentWindow = 0;
@@ -51,7 +51,7 @@ namespace AOC
                 previousWindow = currentWindow;
             }
 
-            return numSlidingIncreased;
+            Console.WriteLine("{0}", numSlidingIncreased);
         }
     }
 }

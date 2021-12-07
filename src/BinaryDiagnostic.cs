@@ -6,7 +6,7 @@ using System.Collections;
 
 namespace AOC
 {
-    public class BinaryDiagnostic
+    public class BinaryDiagnostic : ISolver
     {
         private readonly string filename;
         private List<string> data;
@@ -34,7 +34,7 @@ namespace AOC
             return data;
         }
 
-        public long PartOne()
+        public void PartOne()
         {
             var (gamma, epsilon) = (new char[data[0].Length], new char[data[0].Length]);
 
@@ -49,16 +49,16 @@ namespace AOC
 
             var (gammaNum, epsilonNum) = (Convert.ToInt64(new string(gamma), 2), Convert.ToInt64(new string(epsilon), 2));
 
-            return gammaNum * epsilonNum;
+            Console.WriteLine("{0}", gammaNum * epsilonNum);
         }
 
 
-        public int PartTwo()
+        public void PartTwo()
         {
             var ox = FilterPattern(data, (mostFrequent, leastFrequent, currentBit) => currentBit == (mostFrequent ?? '1'));
             var sc = FilterPattern(data, (mostFrequent, leastFrequent, currentBit) => currentBit == (leastFrequent ?? '0'));
 
-            return ox * sc;
+            Console.WriteLine("{0}", ox * sc);
         }
 
         private int FilterPattern(List<string> pattern, Func<char?, char?, char, bool> filterFunc)

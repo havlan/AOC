@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace AOC
 {
-    public class HydrothermalVenture
+    public class HydrothermalVenture : ISolver
     {
         private record struct Point(int X, int Y);
 
@@ -39,7 +39,7 @@ namespace AOC
             return data;
         }
 
-        public long PartOne()
+        public void PartOne()
         {
             var pointMap = new Dictionary<Point, int>();
             foreach (var p in this.data)
@@ -85,10 +85,10 @@ namespace AOC
                 }
             }
 
-            return pointMap.Count(s => s.Value >= 2);
+            Console.WriteLine("{0}", pointMap.Count(s => s.Value >= 2));
         }
 
-        public int PartTwo()
+        public void PartTwo()
         {
             var pointMap = new Dictionary<Point, int>();
             foreach (var p in this.data)
@@ -118,7 +118,7 @@ namespace AOC
                 }
             }
 
-            return pointMap.Count(s => s.Value >= 2);
+            Console.WriteLine("{0}", pointMap.Count(s => s.Value >= 2));
         }
 
 

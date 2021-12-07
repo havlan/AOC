@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace AOC
 {
-    public class GiantSquid
+    public class GiantSquid : ISolver
     {
         private record struct BingoCell(int Value, bool Bingo);
         private readonly string filename;
@@ -48,7 +48,7 @@ namespace AOC
             return (boards, numbers);
         }
 
-        public int PartOne()
+        public void PartOne()
         {
             foreach (var number in this.operations)
             {
@@ -65,16 +65,16 @@ namespace AOC
 
                             if (IsBingo(b))
                             {
-                                return GetScore(b, number);
+                                Console.WriteLine("{0}", GetScore(b, number));
                             }
                         }
                     }
                 }
             }
-            return -1;
+            Console.WriteLine("{0}", -1);
         }
 
-        public int PartTwo()
+        public void PartTwo()
         {
             var boardsWithBingo = new HashSet<BingoCell[,]>();
 
@@ -101,14 +101,14 @@ namespace AOC
                                 boardsWithBingo.Add(b);
                                 if (boardsWithBingo.Count == this.boards.Count)
                                 {
-                                    return GetScore(b, number);
+                                    Console.WriteLine("{0}", GetScore(b, number));
                                 }
                             }
                         }
                     }
                 }
             }
-            return -1;
+            Console.WriteLine("{0}", -1);
         }
 
         private static bool IsBingo(BingoCell[,] board)

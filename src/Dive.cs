@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace AOC
 {
-    public class Dive
+    public class Dive : ISolver
     {
         private readonly string filename;
         private List<(string direction, int step)> data;
@@ -31,7 +31,7 @@ namespace AOC
             return data;
         }
 
-        public int PartOne()
+        public void PartOne()
         {
             int xPos = 0;
             int depth = 0;
@@ -51,10 +51,10 @@ namespace AOC
                 }
             }
 
-            return xPos * depth;
+            Console.WriteLine("{0}", xPos * depth);
         }
 
-        public int PartTwo()
+        public void PartTwo()
         {
             int aim = 0;
             int xPos = 0;
@@ -76,7 +76,7 @@ namespace AOC
                 }
             }
 
-            return xPos * depth;
+            Console.WriteLine("{0}", xPos * depth);
         }
     }
 }

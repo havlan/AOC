@@ -22,7 +22,10 @@ namespace AOC
                 new BinaryDiagnostic(basePath + "3.txt"),
                 new GiantSquid(basePath + "4.txt"),
                 new HydrothermalVenture(basePath + "5.txt"),
-                new Lanternfish(basePath + "6.txt")
+                new Lanternfish(basePath + "6.txt"),
+                new TreacheryOfWhales(basePath + "7.txt"),
+                new SevenSegmentSearch(basePath + "8.txt"),
+                new SmokeBasin(basePath + "9.txt"),
             };
 
             if (day <= solvers.Length)

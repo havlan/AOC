@@ -13,7 +13,6 @@ namespace AOC
         public Dive(string filename)
         {
             this.filename = filename;
-            this.data = ReadData();
         }
 
         private List<(string, int)> ReadData()
@@ -77,6 +76,11 @@ namespace AOC
             }
 
             Console.WriteLine("{0}", xPos * depth);
+        }
+
+        public void Init()
+        {
+            this.data = ReadData();
         }
     }
 }

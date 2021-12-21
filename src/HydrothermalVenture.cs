@@ -15,7 +15,6 @@ namespace AOC
         public HydrothermalVenture(string filename)
         {
             this.filename = filename;
-            this.data = ReadData();
         }
 
         private List<(Point, Point)> ReadData()
@@ -125,6 +124,11 @@ namespace AOC
         private bool IsApplicableLine(Point start, Point end)
         {
             return (start.X == end.X) || (start.Y == end.Y);
+        }
+
+        public void Init()
+        {
+            this.data = ReadData();
         }
     }
 }

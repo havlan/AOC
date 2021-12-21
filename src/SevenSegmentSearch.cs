@@ -16,7 +16,6 @@ namespace AOC
         public SevenSegmentSearch(string filename)
         {
             this.filename = filename;
-            this.data = ReadData();
         }
 
         private List<(string[], string[])> ReadData()
@@ -59,6 +58,11 @@ namespace AOC
         {
             long sum = 0;
             Console.WriteLine("{0}", sum);
+        }
+
+        public void Init()
+        {
+            this.data = ReadData();
         }
     }
 }

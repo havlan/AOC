@@ -16,7 +16,6 @@ namespace AOC
         public BinaryDiagnostic(string filename)
         {
             this.filename = filename;
-            this.data = ReadData();
         }
 
         private List<string> ReadData()
@@ -78,6 +77,11 @@ namespace AOC
             }
 
             return Convert.ToInt32(pattern[0], 2);
+        }
+
+        public void Init()
+        {
+            this.data = ReadData();
         }
     }
 }

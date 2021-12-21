@@ -8,7 +8,6 @@ namespace AOC
         public TreacheryOfWhales(string filename)
         {
             this.filename = filename;
-            this.data = ReadData();
         }
 
         private List<int> ReadData()
@@ -80,6 +79,11 @@ namespace AOC
             }
 
             Console.WriteLine("{0}", minFuel);
+        }
+
+        public void Init()
+        {
+            this.data = ReadData();
         }
     }
 }

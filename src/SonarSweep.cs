@@ -13,7 +13,6 @@ namespace AOC
         public SonarSweep(string filename)
         {
             this.filename = filename;
-            this.data = ReadData();
         }
 
         private List<int> ReadData()
@@ -52,6 +51,11 @@ namespace AOC
             }
 
             Console.WriteLine("{0}", numSlidingIncreased);
+        }
+
+        public void Init()
+        {
+            this.data = ReadData();
         }
     }
 }

@@ -13,7 +13,6 @@ namespace AOC
         public Lanternfish(string filename)
         {
             this.filename = filename;
-            this.data = ReadData();
         }
 
         private List<int> ReadData()
@@ -67,6 +66,11 @@ namespace AOC
             }
 
             return fishLifeTickToCountMap.Sum(s => s.Value);
+        }
+
+        public void Init()
+        {
+            this.data = ReadData();
         }
     }
 }

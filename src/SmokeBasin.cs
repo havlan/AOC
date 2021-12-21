@@ -13,7 +13,6 @@ namespace AOC
         public SmokeBasin(string filename)
         {
             this.filename = filename;
-            this.data = ReadData();
         }
 
         private int[,] ReadData()
@@ -146,6 +145,11 @@ namespace AOC
 
                 FindBasin(lines, x + 1, y, visited);
             }
+        }
+
+        public void Init()
+        {
+            this.data = ReadData();
         }
     }
 }

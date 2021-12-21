@@ -15,7 +15,6 @@ namespace AOC
         public GiantSquid(string filename)
         {
             this.filename = filename;
-            (this.boards, this.operations) = ReadData();
         }
 
         private (List<BingoCell[,]> bingoBoards, int[] operations) ReadData()
@@ -147,6 +146,11 @@ namespace AOC
             }
 
             return unmarkedSum * number;
+        }
+
+        public void Init()
+        {
+            (this.boards, this.operations) = ReadData();
         }
     }
 }

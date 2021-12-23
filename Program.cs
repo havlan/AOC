@@ -55,6 +55,8 @@ namespace AOC
                 13 => new TransparentOrigami(basePath + "13.txt"),
                 14 => new ExtendedPoymerization(basePath + "14.txt"),
                 15 => new Chiton(basePath + "15.txt"),
+                16 => new PacketDecoder(basePath + "16.txt"),
+                17 => new TrickShot(basePath + "17.txt"),
                 _ => throw new ArgumentException($"Day {day} not implemented."),
             };
         }

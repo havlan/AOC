@@ -59,10 +59,6 @@ namespace AOC
             }
             // add the last one 2
             this.data.Add(currentElf);
-
-            foreach(var elves in this.data){
-                Console.WriteLine(string.Join("-", elves));
-            }
         }
     }
 }

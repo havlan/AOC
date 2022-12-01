@@ -32,12 +32,14 @@ namespace AOC
         private static ISolver Solve(int year, int day)
         {
             string directory = Directory.GetCurrentDirectory();
-#if DEBUG
-            var trimmedDir = directory.Take(directory.IndexOf("bin"));
-            directory = string.Concat(trimmedDir);
-#endif
-            string dataDir = $"\\input\\{year}\\";
-            string basePath = string.Format("{0}{1}{2}.txt", directory, dataDir, day);
+
+            if (directory.Contains("bin"))
+            {
+                var trimmedDir = directory.Take(directory.IndexOf("bin"));
+                directory = string.Concat(trimmedDir);
+            }
+            
+            string basePath = string.Format("{0}\\input\\{1}\\{2}.txt", directory, year, day);
 
             if (year == 2022)
             {

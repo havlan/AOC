@@ -33,7 +33,7 @@ namespace AOC
         {
             string directory = Directory.GetCurrentDirectory();
 #if DEBUG
-            var trimmedDir = directory.Take(directory.IndexOf("bin")); //C: \Users\lahavard\source\repos\AOC\bin\Debug\net6.0\input\2022\1.txt
+            var trimmedDir = directory.Take(directory.IndexOf("bin"));
             directory = string.Concat(trimmedDir);
 #endif
             string dataDir = $"\\input\\{year}\\";

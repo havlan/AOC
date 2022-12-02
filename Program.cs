@@ -45,7 +45,8 @@ namespace AOC
             {
                 return day switch
                 {
-                    _ => new CalorieCounting(basePath),
+                    1 => new CalorieCounting(basePath),
+                    _ => new RockPaperScissors(basePath),
                 };
             }
 

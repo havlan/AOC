@@ -9,12 +9,12 @@ namespace AOC
     public class RucksackReorg : ISolver
     {
         private readonly string filename;
-        private IEnumerable<string> data;
+        private string[] data;
 
         public RucksackReorg(string filename)
         {
             this.filename = filename;
-            this.data = File.ReadLines(this.filename);
+            this.data = File.ReadLines(this.filename).ToArray();
         }
 
         public void PartOne()
@@ -40,12 +40,11 @@ namespace AOC
         public void PartTwo()
         {
             var sum = 0;
-            var dataAsArray = this.data.ToArray();
-            for (var i = 0; i < dataAsArray.Length; i += 3)
+            for (var i = 0; i < this.data.Length; i += 3)
             {
-                var firstItem = new HashSet<char>(dataAsArray[i]);
-                var secondItem = new HashSet<char>(dataAsArray[i + 1]);
-                var thirdItem = new HashSet<char>(dataAsArray[i + 2]);
+                var firstItem = new HashSet<char>(this.data[i]);
+                var secondItem = new HashSet<char>(this.data[i + 1]);
+                var thirdItem = new HashSet<char>(this.data[i + 2]);
                 var firstIntersect = firstItem.Intersect(secondItem);
                 thirdItem.IntersectWith(firstIntersect);
                 if (thirdItem.Any())

@@ -38,7 +38,7 @@ namespace AOC
                 var trimmedDir = directory.Take(directory.IndexOf("bin"));
                 directory = string.Concat(trimmedDir);
             }
-            
+
             string basePath = string.Format("{0}\\input\\{1}\\{2}.txt", directory, year, day);
 
             if (year == 2022)
@@ -46,7 +46,8 @@ namespace AOC
                 return day switch
                 {
                     1 => new CalorieCounting(basePath),
-                    _ => new RockPaperScissors(basePath),
+                    2 => new RockPaperScissors(basePath),
+                    _ => new RucksackReorg(basePath),
                 };
             }
 

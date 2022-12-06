@@ -49,7 +49,8 @@ namespace AOC
                     2 => new RockPaperScissors(basePath),
                     3 => new RucksackReorg(basePath),
                     4 => new CampCleanup(basePath),
-                    _ => new SupplyStacks(basePath),
+                    5 => new SupplyStacks(basePath),
+                    6 => new TuningTrouble(basePath),
                 };
             }
 

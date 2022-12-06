@@ -48,7 +48,8 @@ namespace AOC
                     1 => new CalorieCounting(basePath),
                     2 => new RockPaperScissors(basePath),
                     3 => new RucksackReorg(basePath),
-                    _ => new CampCleanup(basePath),
+                    4 => new CampCleanup(basePath),
+                    _ => new SupplyStacks(basePath),
                 };
             }
 

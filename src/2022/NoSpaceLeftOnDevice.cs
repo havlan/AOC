@@ -9,33 +9,34 @@ namespace AOC
 
     internal class Node
     {
-        public string Name { get; }
-        public Node Parent { get; }
-        public List<Node> Children { get; } = new();
-        public List<(string name, int size)> Files { get; } = new();
+        public string Name;
+        private Node Parent;
+        private Dictionary<string, Node> Children;
+        private Dictionary<string, int> Files;
 
         public Node(Node parent, string name)
         {
             Parent = parent;
             Name = name;
+            Files = new Dictionary<string, int>();
+            Children = new Dictionary<string, Node>();
         }
 
-        public Node Up() => Parent;
+        public Node ChangeDirectory(string name) => name.Equals("..") ? Parent : Children[name];
 
-        public Node Down(string name) => name == "/"
-            ? this
-            : Children.First(d => d.Name.Equals(name));
-            
-        public int GetSize() => 
-            Children.Any()
-                ? Children.Select(c => c.GetSize()).Sum() + Files.Select(f => f.size).Sum()
-                : Files.Select(f => f.size).Sum();
+        public int GetSize() => Files.Values.Sum() + Children.Values.Select(c => c.GetSize()).Sum();
+
+        public void AddDirectory(Node dir) => Children.Add(dir.Name, dir);
+
+        public void AddFile(string name, int size) => Files.Add(name, size);
     }
 
     public class NoSpaceLeftOnDevice : ISolver
     {
         private readonly string filename;
         private string[] data;
+
+        private List<Node> directories = new List<Node>();
 
         public NoSpaceLeftOnDevice(string filename)
         {
@@ -45,50 +46,50 @@ namespace AOC
 
         public void PartOne()
         {
-            List<Node> directories = new List<Node>();
             var current = new Node(null, "/");
             directories.Add(current);
-            foreach (var line in this.data)
+
+            foreach (var unTrimmed in this.data.Skip(1))
             {
-                Console.WriteLine("{0}", line);
+                var line = unTrimmed.Trim();
                 if (line.StartsWith("$ cd"))
                 {
-                    var part = line.Split(' ')[2];
-                    current = part.Equals("..") ? current.Up() : current.Down(part);
+                    current = current.ChangeDirectory(line.Split(' ')[2]);
                     continue;
                 }
 
                 if (line.StartsWith("$ ls"))
                     continue;
-                    
+
                 if (line.StartsWith("dir "))
                 {
                     var dir = new Node(current, line.Split(" ")[1]);
                     directories.Add(dir);
-                    current.Children.Add(dir);
+                    current.AddDirectory(dir);
                 }
                 else
                 {
                     var parts = line.Split(" ");
-                    current.Files.Add((parts[1], int.Parse(parts[0])));
+                    current.AddFile(parts[1], int.Parse(parts[0]));
                 }
             }
 
             var sum = directories
                 .Where(d => d.GetSize() <= 100000)
-                .Select(d => d.GetSize());
-            Console.WriteLine("{0}", string.Join("-", sum));
-                // .Sum().ToString();
-            
+                .Select(d => d.GetSize())
+                .Sum().ToString();
+
             Console.WriteLine("{0}", sum);
         }
 
 
         public void PartTwo()
         {
-            var sum = 0;
-            
-            Console.WriteLine("{0}", sum);
+            // calculate unused space using root dir from part 1.
+            // total space - used - 
+            var needed = 30_000_000 - (70_000_000 - directories.First(d => d.Name.Equals("/")).GetSize());
+
+            Console.WriteLine("{0}", this.directories.Where(s => s.GetSize() > needed).Select(s => s.GetSize()).Min());
         }
 
         public void Init()

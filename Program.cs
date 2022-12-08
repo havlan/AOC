@@ -51,7 +51,8 @@ namespace AOC
                     4 => new CampCleanup(basePath),
                     5 => new SupplyStacks(basePath),
                     6 => new TuningTrouble(basePath),
-                    _ => new NoSpaceLeftOnDevice(basePath),
+                    7 => new NoSpaceLeftOnDevice(basePath),
+                    8 => new TreetopTreeHouse(basePath),
                 };
             }
 

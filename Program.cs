@@ -53,6 +53,8 @@ namespace AOC
                     6 => new TuningTrouble(basePath),
                     7 => new NoSpaceLeftOnDevice(basePath),
                     8 => new TreetopTreeHouse(basePath),
+                    9 => new RopeBridge(basePath),
+                    _ => new RopeBridge(basePath),
                 };
             }
 

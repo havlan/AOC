@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Collections;
 using System.IO;
 using System.Diagnostics;
+using AOC2021.src._2022;
 
 namespace AOC
 {
@@ -56,6 +57,7 @@ namespace AOC
                     9 => new RopeBridge(basePath),
                     10 => new CathodeRayTube(basePath),
                     11 => new MonkeyInTheMiddle(basePath),
+                    12 => new HillClimbingAlgorithm(basePath),
                 };
             }
 

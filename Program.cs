@@ -58,6 +58,7 @@ namespace AOC
                     10 => new CathodeRayTube(basePath),
                     11 => new MonkeyInTheMiddle(basePath),
                     12 => new HillClimbingAlgorithm(basePath),
+                    13 => new DistressSignal(basePath),
                 };
             }
 

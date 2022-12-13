@@ -1,46 +1,22 @@
 ﻿namespace AOC2021.src._2022
 {
     using AOC;
-    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using System.ComponentModel.DataAnnotations;
     using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
 
     public class HillClimbingAlgorithm : ISolver
     {
         private string filename;
-        private int[,] map;
+        private Map map;
         private string[] lines;
 
         public HillClimbingAlgorithm(string filename)
         {
             this.filename = filename;
-            lines = File.ReadLines(this.filename).ToArray();
-            map = new int[lines.Length, lines.First().Length];
-            for (var i=0;i<lines.Length;i++)
-            {
-                for(var k = 0; k < lines[i].Length; k++)
-                {
-                    map[i, k] = lines[i][k] switch
-                    {
-                        'S' => (int)'a' - 97,
-                        'E' => (int)'z' - 97,
-                        _ => (int)lines[i][k] - 97,
-                    };
-                }
-            }
+            lines = File.ReadAllLines(this.filename);
+            map = Map.Parse(lines);
         }
-
-        private int GetScore(char c) => 
-            c switch
-            {
-                'S' => (int)'a' - 97,
-                'E' => (int)'z' - 97,
-                _ => (int)c - 97,
-            };
 
         public void Init()
         {
@@ -48,66 +24,101 @@
 
         public void PartOne()
         {
-            (int, int) error = (-1, -1);
-            var startState = (0, 0);
-            var targetState = (-1, -1);
-            var previous = new Dictionary<(int x, int y), (int x, int y)>();
-            var trail = new Queue<(int x, int y)>();
-            trail.Enqueue(startState);
-            while(trail.Count > 0)
-            {
-                var currentPosition = trail.Dequeue();
+            Console.WriteLine("{0}", FindPathLength(map, map.Start, map.Goal));
+        }
 
-                if (lines[currentPosition.x][currentPosition.y] == 'E')
+        private int? FindPathLength(Map map, Point start, Point goal)
+        {
+            var depth = new Dictionary<Point, int>() { [start] = 0 };
+            var queue = new Queue<Point>(depth.Keys);
+            while (queue.Count > 0)
+            {
+                var pt = queue.Dequeue();
+                if (pt == goal)
                 {
-                    Console.WriteLine("Found target at {0},{1}", currentPosition.x, currentPosition.y);
-                    targetState = currentPosition;
                     break;
                 }
 
-                var neighbors = getNeighbors(currentPosition);
-                foreach((int x, int y) neighbor in neighbors)
+                var d = depth[pt];
+                var adjacent = map
+                    .GetValidMoves(pt)
+                    .Where(x => !depth.ContainsKey(x));
+
+                foreach (var item in adjacent)
                 {
-                    Console.WriteLine("{0}-{1}", neighbor.x, neighbor.y);
-                    if (previous.ContainsKey(neighbor))
-                    {
-                        continue;
-                    }
-
-                    previous[neighbor] = currentPosition;
-                    trail.Enqueue(neighbor);
-                }
-
-            }
-
-            List<(int, int)> path = new List<(int, int)>();
-            if (previous.ContainsKey(targetState) || targetState == startState)
-            {
-                while (targetState != error)
-                {
-                    path.Add(targetState);
-                    targetState = previous.ContainsKey(targetState) ? previous[targetState] : error;
+                    depth[item] = d + 1;
+                    queue.Enqueue(item);
                 }
             }
 
-            Console.WriteLine("Path {0}", path.Count);
-        }
-
-        private ImmutableArray<(int, int)> getNeighbors ((int row, int column) current)
-        {
-            var error = (-1, -1);
-            var left = current.column > 0 ? (current.row, current.column - 1) : error;
-            var right = current.column < lines[0].Length ? (current.row, current.column + 1) : error;
-            var up = current.row > 0 ? (current.row - 1, current.column) : error;
-            var down = current.row < lines.Length ? (current.row + 1, current.column) : error;
-
-            var neighbors = new[] { left, right, up, down };
-
-            return neighbors.Where(s => s != error).ToImmutableArray();
+            return depth.TryGetValue(goal, out var result)
+              ? result
+              : default(int?);
         }
 
         public void PartTwo()
         {
+            var result = map.Heights
+                 .Where(x => x.Value == 1) // all a's
+                 .Select(x => FindPathLength(map, x.Key, map.Goal)) // test from all a's
+                 .Where(p => p.HasValue) // filter out wrong results
+                 .Min(); // shortest path
+
+            Console.WriteLine("{0}", result);
+        }
+
+        record struct Point(int X, int Y)
+        {
+            public IEnumerable<Point> GetAdjacentPoints()
+            {
+                yield return new(X - 1, Y);
+                yield return new(X, Y - 1);
+                yield return new(X + 1, Y);
+                yield return new(X, Y + 1);
+            }
+        }
+
+        record Map(ImmutableDictionary<Point, int> Heights, Point Start, Point Goal)
+        {
+            public IEnumerable<Point> GetValidMoves(Point location)
+            {
+                if (!Heights.TryGetValue(location, out var height))
+                    return Enumerable.Empty<Point>();
+
+                var max = height + 1;
+                return location.GetAdjacentPoints()
+                    .Where(pt => Heights.TryGetValue(pt, out var height) && height <= max);
+            }
+            public static Map Parse(string[] input)
+            {
+                Point start = default,
+                      goal = default;
+                var result = ImmutableDictionary.CreateBuilder<Point, int>();
+
+                for (var row = 0; row < input.Length; ++row)
+                {
+                    var line = input[row];
+                    for (var col = 0; col < line.Length; ++col)
+                    {
+                        var pos = new Point(col, row);
+                        var ch = line[col];
+                        if (ch == 'S')
+                        {
+                            (result[pos], start) = (1, pos);
+                        }
+                        else if (ch == 'E')
+                        {
+                            (result[pos], goal) = (26, pos);
+                        }
+                        else
+                        {
+                            result[pos] = ch - 'a' + 1;
+                        }
+                    }
+                }
+
+                return new(result.ToImmutable(), start, goal);
+            }
         }
     }
 }

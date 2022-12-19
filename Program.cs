@@ -59,6 +59,7 @@ namespace AOC
                     11 => new MonkeyInTheMiddle(basePath),
                     12 => new HillClimbingAlgorithm(basePath),
                     13 => new DistressSignal(basePath),
+                    14 => new RegolithReservoir(basePath),
                 };
             }
 

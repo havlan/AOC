@@ -61,6 +61,7 @@ namespace AOC
                     13 => new DistressSignal(basePath),
                     14 => new RegolithReservoir(basePath),
                     15 => new BeaconExclusionZone(basePath),
+                    16 => new ProboscideaVolcanium(basePath),
                 };
             }
 

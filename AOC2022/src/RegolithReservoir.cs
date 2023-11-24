@@ -8,8 +8,9 @@ using System.Text.Json;
 using System.Resources;
 using System.Net.Sockets;
 using System.Collections.Immutable;
+using AOC;
 
-namespace AOC
+namespace AOC_2022
 {
     public class RegolithReservoir : ISolver
     {

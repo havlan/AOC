@@ -4,8 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections;
 using System.Text.RegularExpressions;
+using AOC;
 
-namespace AOC
+namespace AOC_2022
 {
     internal record Point(int x, int y) { }
     public class BeaconExclusionZone : ISolver

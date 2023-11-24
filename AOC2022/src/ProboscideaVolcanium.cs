@@ -6,10 +6,10 @@ using System.Collections;
 using System.Xml.Schema;
 using System.Runtime.ConstrainedExecution;
 using System.IO;
-using AOC.Utils;
+using AOC;
 using System.Text.RegularExpressions;
 
-namespace AOC
+namespace AOC_2022
 {
     public class ProboscideaVolcanium : ISolver
     {

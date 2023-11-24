@@ -10,7 +10,7 @@
     {
         static void Main(string[] args)
         {
-            var day = args.Length > 0 ? int.Parse(args[0]) : DateTime.Now.Day;
+            var dayArgs = args.Length > 0 ? int.Parse(args[0]) : 0;
             var month = DateTime.Now.Month;
             string directory = Directory.GetCurrentDirectory();
 
@@ -36,16 +36,19 @@
                 { 12, new HillClimbingAlgorithm(string.Format("{0}\\input\\{1}.txt", directory, 12)) },
                 { 13, new DistressSignal(string.Format("{0}\\input\\{1}.txt", directory, 13)) },
                 { 14, new RegolithReservoir(string.Format("{0}\\input\\{1}.txt", directory, 14)) },
+                { 15, new BeaconExclusionZone(string.Format("{0}\\input\\{1}.txt", directory, 15)) },
+                { 16, new ProboscideaVolcanium(string.Format("{0}\\input\\{1}.txt", directory, 16)) },
             };
 
             var solversToRun = new List<ISolver>();
 
-            if (month != 12)
+            if (month != 12 && dayArgs != 0)
             {
                 solversToRun.AddRange(solvers.Values);
             }
             else
             {
+                var day = dayArgs == 0 ? DateTime.Now.Day : dayArgs;
                 solversToRun.Add(solvers[day]);
             }
 

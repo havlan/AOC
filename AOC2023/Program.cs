@@ -23,6 +23,10 @@
             var solvers = new Dictionary<int, ISolver>()
             {
                 { 1,  new Trebuchet(string.Format("{0}\\input\\{1}.txt", directory, 1)) },
+                { 2, new CubeConundrum(string.Format("{0}\\input\\{1}.txt", directory, 2)) },
+                { 3, new GearRatios(string.Format("{0}\\input\\{1}.txt", directory, 3)) },
+                { 4, new Scratchcards(string.Format("{0}\\input\\{1}.txt", directory, 4)) },
+
             };
 
             var solversToRun = new List<ISolver>();

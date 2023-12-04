@@ -9,7 +9,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AOC2021", "AOC2021\AOC2021.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AOC2022", "AOC2022\AOC2022.csproj", "{3D250110-9DA0-4AC4-8527-56C730CA75C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AOC2023", "AOC2023\AOC2023.csproj", "{0784C740-48EB-467F-95A3-DFB5EC9DF9EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AOC2023", "AOC2023\AOC2023.csproj", "{0784C740-48EB-467F-95A3-DFB5EC9DF9EE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{14B9CB2E-AEBC-4B7D-83E9-C8A7DCA0F31E}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

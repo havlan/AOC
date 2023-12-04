@@ -9,6 +9,10 @@
     <InvariantGlobalization>true</InvariantGlobalization>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
 	<ItemGroup>
 		<ProjectReference Include="..\AOC\AOC.csproj" />
 	</ItemGroup>

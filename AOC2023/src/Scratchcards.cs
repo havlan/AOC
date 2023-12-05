@@ -1,4 +1,6 @@
 ﻿using AOC;
+using System.Diagnostics.Metrics;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AOC_2023
 {
@@ -13,7 +15,7 @@ namespace AOC_2023
                 return winningNums.Intersect(myNums).Count();
             }
         }
-        private Card[] game;
+        private List<Card> game;
 
         public Scratchcards(string filename)
         {
@@ -22,14 +24,14 @@ namespace AOC_2023
         public void Init()
         {
             this.data = File.ReadAllLines(filename);
-            this.game = new Card[this.data.Length];
+            this.game = new List<Card>();
             var i = 0;
             foreach (var line in this.data)
             {
                 var nums = line.Split(':')[1].Split("|");
                 var winningNums = nums[0].Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToHashSet();
                 var myNums = nums[1].Split(" ", StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToHashSet();
-                this.game[i] = new Card(1, winningNums, myNums);
+                this.game.Add(new Card(1, winningNums, myNums));
             }
         }
 
@@ -50,17 +52,19 @@ namespace AOC_2023
 
         public void PartTwo()
         {
-            foreach(var c in this.game)
+            var allWins = this.game.Select(_ => 1).ToArray();
+
+            for (var i = 0; i < this.game.Count; i++)
             {
-                var wins = c.GetWinningCount();
-                for(var i=c.num+1;i < c.num + wins + 1; i++)
+                var (card, count) = (this.game[i], allWins[i]);
+                var matches = card.GetWinningCount();
+                for (var j = 0; j < matches; j++)
                 {
-                    for (int j = 0; j < c.num; j++)
-                    {
-                        this.game[i].num++;
-                    }
+                    allWins[i + j + 1] += count;
                 }
             }
+
+            Console.WriteLine(allWins.Sum());
         }
     }
 }

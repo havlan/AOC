@@ -26,7 +26,7 @@
                 { 2, new CubeConundrum(string.Format("{0}\\input\\{1}.txt", directory, 2)) },
                 { 3, new GearRatios(string.Format("{0}\\input\\{1}.txt", directory, 3)) },
                 { 4, new Scratchcards(string.Format("{0}\\input\\{1}.txt", directory, 4)) },
-
+                { 5, new IfYouGiveASeedAFertilizer(string.Format("{0}\\input\\{1}.txt", directory, 5)) },
             };
 
             var solversToRun = new List<ISolver>();

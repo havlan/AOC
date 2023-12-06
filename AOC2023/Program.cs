@@ -27,6 +27,7 @@
                 { 3, new GearRatios(string.Format("{0}\\input\\{1}.txt", directory, 3)) },
                 { 4, new Scratchcards(string.Format("{0}\\input\\{1}.txt", directory, 4)) },
                 { 5, new IfYouGiveASeedAFertilizer(string.Format("{0}\\input\\{1}.txt", directory, 5)) },
+                { 6, new WaitForIt(string.Format("{0}\\input\\{1}.txt", directory, 6)) },
             };
 
             var solversToRun = new List<ISolver>();

@@ -57,16 +57,10 @@
 
         public void PartTwo()
         {
-            var waysToWin = 0;
-            for (var hold = 0; hold < newTime; hold++)
-            {
-                var timeLeft = newTime - hold;
-                var distTravelled = hold * timeLeft;
-                if (distTravelled > newDist)
-                {
-                    waysToWin++;
-                }
-            }
+            var b1 = Math.Floor((newTime + Math.Sqrt(Utils.IntPow(newTime, 2) - 4 * newDist)) / 2);
+            var b2 = Math.Ceiling((newTime - Math.Sqrt(Utils.IntPow(newTime, 2) - 4 * newDist)) / 2);
+
+            var waysToWin = b1 - b2 + 1;
 
             Console.WriteLine(waysToWin);
         }

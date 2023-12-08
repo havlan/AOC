@@ -46,5 +46,37 @@ namespace AOC
 
             return (index == min && s1.Length == s2.Length) ? -1 : index;
         }
+
+        public static int GCD(int a, int b)
+        {
+            while (b != 0)
+            {
+                int temp = b;
+                b = a % b;
+                a = temp;
+            }
+            return a;
+        }
+
+        public static int LCM(int a, int b)
+        {
+            return (a / GCD(a, b)) * b;
+        }
+
+        public static long GCD(long a, long b)
+        {
+            while (b != 0)
+            {
+                long temp = b;
+                b = a % b;
+                a = temp;
+            }
+            return a;
+        }
+
+        public static long LCM(long a, long b)
+        {
+            return (a / GCD(a, b)) * b;
+        }
     }
 }

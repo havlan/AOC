@@ -30,6 +30,8 @@
                 { 6, new WaitForIt(string.Format("{0}\\input\\{1}.txt", directory, 6)) },
                 { 7, new CamelCards(string.Format("{0}\\input\\{1}.txt", directory, 7)) },
                 { 8, new HauntedWasteland(string.Format("{0}\\input\\{1}.txt", directory, 8)) },
+                { 9, new MirageMaintenance(string.Format("{0}\\input\\{1}.txt", directory, 9)) },
+                { 10, new MirageMaintenance(string.Format("{0}\\input\\{1}.txt", directory, 9)) },
             };
 
             var solversToRun = new List<ISolver>();

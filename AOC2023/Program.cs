@@ -31,7 +31,11 @@
                 { 7, new CamelCards(string.Format("{0}\\input\\{1}.txt", directory, 7)) },
                 { 8, new HauntedWasteland(string.Format("{0}\\input\\{1}.txt", directory, 8)) },
                 { 9, new MirageMaintenance(string.Format("{0}\\input\\{1}.txt", directory, 9)) },
-                { 10, new MirageMaintenance(string.Format("{0}\\input\\{1}.txt", directory, 9)) },
+                { 10, new PipeMaze(string.Format("{0}\\input\\{1}.txt", directory, 10)) },
+                { 11, new CosmicExpansion(string.Format("{0}\\input\\{1}.txt", directory, 11)) },
+                { 12, new CosmicExpansion(string.Format("{0}\\input\\{1}.txt", directory, 11)) },
+                { 13, new CosmicExpansion(string.Format("{0}\\input\\{1}.txt", directory, 11)) },
+
             };
 
             var solversToRun = new List<ISolver>();

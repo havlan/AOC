@@ -89,6 +89,72 @@ namespace AOC_2023
 
         public void PartTwo()
         {
+            (var loopCoordinates, int steps) = FindLoop();
+            int area = ShoeLaceTheorem(loopCoordinates.ToList());
+            int insideArea = Picks(area, loopCoordinates.Count);
+
+            Console.WriteLine(insideArea);
+        }
+
+        (HashSet<PipePoint>, int) FindLoop()
+        {
+            int steps = 1;
+            var start = this.sequences[start1];
+            var a = start.Item1;
+            var b = start.Item2;
+            PipePoint prevA = start1;
+            PipePoint prevB = start1;
+            HashSet<PipePoint> loop = new()
+            {
+                start1, a, b
+            };
+
+            do
+            {
+                var nextA = this.sequences[a].Item1 == prevA ? this.sequences[a].Item2 : this.sequences[a].Item1;
+                var nextB = this.sequences[b].Item1 == prevB ? this.sequences[b].Item2 : this.sequences[b].Item1;
+                prevA = a;
+                prevB = b;
+                a = nextA;
+                b = nextB;
+                loop.Add(a);
+                loop.Add(b);
+                ++steps;
+            } while (a != b);
+
+            return (loop, steps); 
+        }
+
+        int Picks(int area, int nrOfBoundries)
+        {
+            return area - nrOfBoundries / 2 + 1;
+        }
+
+        int ShoeLaceTheorem(List<PipePoint> verticies)
+        {
+            List<int> xs = new List<int>();
+            foreach (var vertice in verticies)
+            {
+                xs.Add(vertice.X);
+            }
+            List<int> ys = new List<int>();
+            foreach (var vertice in verticies)
+            {
+                ys.Add(vertice.Y);
+            }
+
+            var sum1 = 0;
+            var sum2 = 0;
+            for (var i = 0; i < xs.Count; i++)
+            {
+                var wonkyIndex = (i + 1) % ys.Count;
+                sum1 += xs[i] * ys[wonkyIndex];
+                sum2 += ys[i] * xs[wonkyIndex];
+            }
+
+            var totalSum = sum1 - sum2;
+            var result = Math.Abs(totalSum) / 2;
+            return result;
         }
     }
 }

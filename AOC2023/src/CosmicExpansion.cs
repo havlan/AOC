@@ -158,5 +158,14 @@
         public void PartTwo()
         {
         }
+
+        public record Vector(long Row, long Col)
+        {
+            public override string ToString() => $"[{Row}, {Col}]";
+
+            public Vector VectorTo(Vector other) => new(other.Row - Row, other.Col - Col);
+
+            public long NumberSteps { get; } = Math.Abs(Row) + Math.Abs(Col);
+        }
     }
 }

@@ -21,6 +21,7 @@ namespace AOC_2023
             ['F'] = new Pipe(1, 0, 0, 1),
             ['.'] = new Pipe(0, 0, 0, 0),
         };
+        private string[] inputs;
         private string[,] grid;
         private PipePoint start1;
         private Dictionary<PipePoint, (PipePoint, PipePoint)> sequences;
@@ -34,7 +35,7 @@ namespace AOC_2023
         }
         public void Init()
         {
-            var inputs = File.ReadAllLines(this.filename);
+            this.inputs = File.ReadAllLines(this.filename);
             this.grid = new string[inputs.Length, inputs[0].Length];
 
             this.start1 = new PipePoint(-1, -1);
@@ -66,37 +67,19 @@ namespace AOC_2023
 
         public void PartOne()
         {
-            int steps = 1;
-            var start = this.sequences[start1];
-            var a = start.Item1;
-            var b = start.Item2;
-            PipePoint prevA = start1;
-            PipePoint prevB = start1;
-
-            do
-            {
-                var nextA = this.sequences[a].Item1 == prevA ? this.sequences[a].Item2 : this.sequences[a].Item1;
-                var nextB = this.sequences[b].Item1 == prevB ? this.sequences[b].Item2 : this.sequences[b].Item1;
-                prevA = a;
-                prevB = b;
-                a = nextA;
-                b = nextB;
-                ++steps;
-            } while (a != b);
+            (_, var steps) = FindLoop();
 
             Console.WriteLine(steps);
         }
 
         public void PartTwo()
         {
-            (var loopCoordinates, int steps) = FindLoop();
-            int area = ShoeLaceTheorem(loopCoordinates.ToList());
-            int insideArea = Picks(area, loopCoordinates.Count);
-
-            Console.WriteLine(insideArea);
+            var maze = FetchMaze();
+            Fill(maze);
+            Console.WriteLine($"P2: {CountInner(maze)}");
         }
 
-        (HashSet<PipePoint>, int) FindLoop()
+        (List<PipePoint>, int) FindLoop()
         {
             int steps = 1;
             var start = this.sequences[start1];
@@ -104,7 +87,7 @@ namespace AOC_2023
             var b = start.Item2;
             PipePoint prevA = start1;
             PipePoint prevB = start1;
-            HashSet<PipePoint> loop = new()
+            List<PipePoint> loop = new()
             {
                 start1, a, b
             };
@@ -125,36 +108,173 @@ namespace AOC_2023
             return (loop, steps); 
         }
 
-        int Picks(int area, int nrOfBoundries)
+        // Create a scaled out maze
+        private char[,] FetchMaze()
         {
-            return area - nrOfBoundries / 2 + 1;
+            int length = this.inputs.Length;
+            int width = this.inputs[0].Length;
+
+            char[,] maze = new char[(length + 1) * 3, (width + 1) * 3];
+            for (int r = 0; r < maze.GetLength(0) - 1; r++)
+            {
+                for (int c = 0; c < maze.GetLength(1) - 1; c++)
+                {
+                    maze[r, c] = '.';
+                }
+            }
+
+            for (int r = 0; r < length; r++)
+            {
+                for (int c = 0; c < width; c++)
+                {
+                    Scale(r * 3 + 1, c * 3 + 1, this.inputs[r][c], maze);
+                }
+            }
+
+            return maze;
         }
 
-        int ShoeLaceTheorem(List<PipePoint> verticies)
+        private void Fill(char[,] maze)
         {
-            List<int> xs = new List<int>();
-            foreach (var vertice in verticies)
+            var neighbours = new (int, int)[] { (-1, 0), (1, 0), (0, -1), (0, 1) };
+            var length = maze.GetLength(0);
+            var width = maze.GetLength(1);
+            var locs = new Queue<(int, int)>();
+            locs.Enqueue((0, 0));
+            var visited = new HashSet<(int, int)>();
+
+            do
             {
-                xs.Add(vertice.X);
+                var loc = locs.Dequeue();
+                if (visited.Contains(loc))
+                    continue;
+                maze[loc.Item1, loc.Item2] = 'o';
+                visited.Add((loc.Item1, loc.Item2));
+
+                foreach (var n in neighbours)
+                {
+                    var nr = loc.Item1 + n.Item1;
+                    var nc = loc.Item2 + n.Item2;
+                    if (nr < 0 || nr >= length || nc < 0 || nc >= width || visited.Contains((nr, nc)))
+                        continue;
+                    if (maze[nr, nc] == '.')
+                        locs.Enqueue((nr, nc));
+                }
             }
-            List<int> ys = new List<int>();
-            foreach (var vertice in verticies)
+            while (locs.Count > 0);
+        }
+
+        private int CountInner(char[,] maze)
+        {
+            var length = maze.GetLength(0) - 1;
+            var width = maze.GetLength(1) - 1;
+            int count = 0;
+            var pixels = new (int, int)[] { (0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 0), (2, 1), (2, 2) };
+
+            for (int r = 1; r < length; r += 3)
             {
-                ys.Add(vertice.Y);
+                for (int c = 1; c < width; c += 3)
+                {
+                    bool isInner = true;
+                    foreach (var p in pixels)
+                    {
+                        if (maze[r + p.Item1, c + p.Item2] == 'o')
+                        {
+                            isInner = false;
+                            break;
+                        }
+                    }
+                    if (isInner) ++count;
+                }
             }
 
-            var sum1 = 0;
-            var sum2 = 0;
-            for (var i = 0; i < xs.Count; i++)
-            {
-                var wonkyIndex = (i + 1) % ys.Count;
-                sum1 += xs[i] * ys[wonkyIndex];
-                sum2 += ys[i] * xs[wonkyIndex];
-            }
+            return count;
+        }
 
-            var totalSum = sum1 - sum2;
-            var result = Math.Abs(totalSum) / 2;
-            return result;
+        /// scale to 3x3
+        private void Scale(int row, int col, char ch, char[,] maze)
+        {
+            (int, int, char)[] pattern = ch switch
+            {
+                '.' => [(0, 0, '.'),
+                    (0, 1, '.'),
+                    (0, 2, '.'),
+                    (1, 0, '.'),
+                    (1, 1, '.'),
+                    (1, 2, '.'),
+                    (2, 0, '.'),
+                    (2, 1, '.'),
+                    (2, 2, '.')],
+                'S' => [(0, 0, '.'),
+                    (0, 1, 'S'),
+                    (0, 2, '.'),
+                    (1, 0, 'S'),
+                    (1, 1, 'S'),
+                    (1, 2, 'S'),
+                    (2, 0, '.'),
+                    (2, 1, 'S'),
+                    (2, 2, '.')],
+                '|' => [(0, 0, '.'),
+                    (0, 1, '|'),
+                    (0, 2, '.'),
+                    (1, 0, '.'),
+                    (1, 1, '|'),
+                    (1, 2, '.'),
+                    (2, 0, '.'),
+                    (2, 1, '|'),
+                    (2, 2, '.')],
+                '-' => [(0, 0, '.'),
+                    (0, 1, '.'),
+                    (0, 2, '.'),
+                    (1, 0, '-'),
+                    (1, 1, '-'),
+                    (1, 2, '-'),
+                    (2, 0, '.'),
+                    (2, 1, '.'),
+                    (2, 2, '.')],
+                'L' => [(0, 0, '.'),
+                    (0, 1, '|'),
+                    (0, 2, '.'),
+                    (1, 0, '.'),
+                    (1, 1, '+'),
+                    (1, 2, '-'),
+                    (2, 0, '.'),
+                    (2, 1, '.'),
+                    (2, 2, '.')],
+                'J' => [(0, 0, '.'),
+                    (0, 1, '|'),
+                    (0, 2, '.'),
+                    (1, 0, '-'),
+                    (1, 1, '+'),
+                    (1, 2, '.'),
+                    (2, 0, '.'),
+                    (2, 1, '.'),
+                    (2, 2, '.')],
+                '7' => [(0, 0, '.'),
+                    (0, 1, '.'),
+                    (0, 2, '.'),
+                    (1, 0, '-'),
+                    (1, 1, '+'),
+                    (1, 2, '.'),
+                    (2, 0, '.'),
+                    (2, 1, '|'),
+                    (2, 2, '.')],
+                'F' => [(0, 0, '.'),
+                    (0, 1, '.'),
+                    (0, 2, '.'),
+                    (1, 0, '.'),
+                    (1, 1, '+'),
+                    (1, 2, '-'),
+                    (2, 0, '.'),
+                    (2, 1, '|'),
+                    (2, 2, '.')],
+                _ => throw new InvalidOperationException()
+            };
+
+            foreach (var p in pattern)
+            {
+                maze[row + p.Item1, col + p.Item2] = p.Item3;
+            }
         }
     }
 }

@@ -33,7 +33,7 @@
                 { 9, new MirageMaintenance(string.Format("{0}\\input\\{1}.txt", directory, 9)) },
                 { 10, new PipeMaze(string.Format("{0}\\input\\{1}.txt", directory, 10)) },
                 { 11, new CosmicExpansion(string.Format("{0}\\input\\{1}.txt", directory, 11)) },
-                { 12, new CosmicExpansion(string.Format("{0}\\input\\{1}.txt", directory, 11)) },
+                { 12, new HotSprings(string.Format("{0}\\input\\{1}.txt", directory, 12)) },
                 { 13, new CosmicExpansion(string.Format("{0}\\input\\{1}.txt", directory, 11)) },
 
             };

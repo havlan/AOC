@@ -6,44 +6,46 @@
     using System.Collections.Generic;
     using System.Drawing;
     using System.Linq;
+    using System.Runtime.CompilerServices;
     using System.Text;
     using System.Threading.Tasks;
 
     public class CosmicExpansion : ISolver
     {
-        private string filename;
-        private HashSet<int> emptyColumns;
-        private int size;
-        private HashSet<int> emptyRows;
-        private List<(int X, int Y)> galaxies;
-        private Dictionary<((int X, int Y), (int X, int Y)), ulong> distance;
+        record Universe {
+            public int Size;
+            public HashSet<int> EmptyRows;
+            public HashSet<int> EmptyCols;
+            public List<(int X, int Y)> Galaxies;
+            public ulong Expand;
 
-        public CosmicExpansion(string filename)
-        {
-            this.filename = filename;
-        }
+            public Universe()
+            {
+                Galaxies = new List<(int, int)>();
+                EmptyCols = new HashSet<int>();
+                EmptyRows = new HashSet<int>();
+            }
+        };
 
-        public void Init()
+        Universe FetchInput()
         {
+            var universe = new Universe();
             var lines = File.ReadAllLines(this.filename);
-            this.size = lines.Length;
-            this.emptyRows = new HashSet<int>();
+            universe.Size = lines.Length;
 
-            // empty rows
-            for (int r = 0; r < size; r++)
+            // Find the rows & columns we need to 'expand'
+            for (int r = 0; r < universe.Size; r++)
             {
                 if (!lines[r].ToCharArray().Any(ch => ch != '.'))
                 {
-                    this.emptyRows.Add(r);
+                    universe.EmptyRows.Add(r);
                 }
             }
 
-            // empty columns
-            this.emptyColumns = new HashSet<int>();
-            for (int c = 0; c < size; c++)
+            for (int c = 0; c < universe.Size; c++)
             {
                 bool empty = true;
-                for (int r = 0; r < size; r++)
+                for (int r = 0; r < universe.Size; r++)
                 {
                     if (lines[r][c] != '.')
                     {
@@ -53,102 +55,105 @@
                 }
                 if (empty)
                 {
-                    this.emptyColumns.Add(c);
+                    universe.EmptyCols.Add(c);
                 }
             }
 
-            this.galaxies = new List<(int X, int Y)>();
-            for (int r = 0; r < size; r++)
+            for (int r = 0; r < universe.Size; r++)
             {
-                for (int c = 0; c < size; c++)
+                for (int c = 0; c < universe.Size; c++)
                 {
                     if (lines[r][c] == '#')
                     {
-                        galaxies.Add((c, r));
+                        universe.Galaxies.Add((r, c));
                     }
                 }
             }
 
-            this.distance = new Dictionary<((int X, int Y), (int X, int Y)), ulong>();
+            return universe;
+        }
+        private string filename;
+        private Universe universe;
+
+        public CosmicExpansion(string filename)
+        {
+            this.filename = filename;
         }
 
-        private ulong Shortest1((int X, int Y) start, (int X, int Y) goal, int size)
+        public void Init()
         {
-            var neighbours = new (int, int)[] { (-1, 0), (1, 0), (0, -1), (0, 1) };
-            var q = new Queue<(int, int)>();
-            q.Enqueue(start);
-            var currentDistances = new Dictionary<(int, int), ulong>() { { start, 0 } };
-            ulong shortest = ulong.MaxValue;
+            this.universe = FetchInput();
+        }
 
+        Dictionary<((int, int), (int, int)), ulong> CalculateDistancesBetweenGalaxies(Universe galaxy, (int, int) start)
+        {
+            ulong[,] distances = new ulong[galaxy.Size, galaxy.Size];
+            for (int r = 0; r < galaxy.Size; r++)
+            {
+                for (int c = 0; c < galaxy.Size; c++)
+                    distances[r, c] = UInt64.MaxValue;
+            }
+            distances[start.Item1, start.Item2] = 0;
+
+            var q = new Queue<(int R, int C)>();
+            q.Enqueue(start);
+
+            var neighbours = new (int R, int C)[] { (-1, 0), (1, 0), (0, -1), (0, 1) };
             do
             {
-                var current = q.Dequeue();
-                var currentDistance = currentDistances[current];
+                var curr = q.Dequeue();
 
-                foreach (var neighbour in neighbours)
+                foreach (var n in neighbours)
                 {
-                    var next = (current.Item1 + neighbour.Item1, current.Item2 + neighbour.Item2);
-                    if (next.Item1 < 0 || next.Item1 >= size || next.Item2 < 0 || next.Item2 >= size)
+                    var nr = curr.R + n.R;
+                    var nc = curr.C + n.C;
+
+                    // make sure neighbour is in bounds
+                    if (nr < 0 || nr >= galaxy.Size || nc < 0 || nc >= galaxy.Size)
                     {
                         continue;
                     }
-
-                    ulong delta = emptyColumns.Contains(next.Item2) || emptyRows.Contains(next.Item1) ? (ulong)2 : 1;
-                    var nextCost = currentDistance + delta;
-
-                    if (nextCost > shortest)
+                    ulong move = galaxy.EmptyRows.Contains(nr) || galaxy.EmptyCols.Contains(nc) ? galaxy.Expand : 1;
+                    ulong cost = move + distances[curr.R, curr.C];
+                    if (cost < distances[nr, nc])
                     {
-                        continue;
-                    }
-
-                    if (next == goal && nextCost < shortest)
-                    {
-                        currentDistances[goal] = nextCost;
-                        shortest = nextCost;
-                        continue;
-                    }
-
-                    if (!currentDistances.ContainsKey(next))
-                    {
-                        currentDistances.Add(next, nextCost);
-                        q.Enqueue(next);
-                    }
-                    else if (nextCost < currentDistances[next])
-                    {
-                        currentDistances[next] = nextCost;
-                        q.Enqueue(next);
+                        q.Enqueue((nr, nc));
+                        distances[nr, nc] = cost;
                     }
                 }
-            } while (q.Count() > 0);
+            }
+            while (q.Count > 0);
 
-            return currentDistances[goal];
+            var allDistances = new Dictionary<((int, int), (int, int)), ulong>();
+            foreach (var g in galaxy.Galaxies.Where(g => g != start))
+            {
+                // add both distances
+                allDistances.Add((start, g), distances[g.Item1, g.Item2]);
+                allDistances.Add((g, start), distances[g.Item1, g.Item2]);
+            }
+
+            return allDistances;
         }
 
         public void PartOne()
         {
-            var pairnum = 0;
-            foreach (var galaxy in galaxies)
-            {
-                foreach (var otherGalaxy in galaxies)
-                {
-                    pairnum++;
-                    if (galaxy == otherGalaxy)
-                    {
-                        continue;
-                    }
+            this.universe.Expand = 2;
+            var allDistances = new Dictionary<((int, int), (int, int)), ulong>();
 
-                    if (!distance.ContainsKey((galaxy, otherGalaxy)))
+            foreach (var g in universe.Galaxies)
+            {
+                var distances = CalculateDistancesBetweenGalaxies(this.universe, g);
+                foreach (var k in distances.Keys)
+                {
+                    if (!allDistances.ContainsKey(k))
                     {
-                        var d = Shortest1(galaxy, otherGalaxy, size);
-                        distance.Add((galaxy, otherGalaxy), d);
-                        distance.Add((otherGalaxy, galaxy), d);
+                        allDistances.Add(k, distances[k]);
                     }
                 }
-
-                Console.WriteLine($"Done with {galaxy} after {pairnum}/{galaxies.Count() * galaxies.Count()} pairs.");
             }
+
             ulong total = 0;
-            foreach (var d in this.distance.Values)
+            foreach (var d in allDistances.Values)
             {
                 total += d;
             }
@@ -157,15 +162,27 @@
 
         public void PartTwo()
         {
-        }
+            this.universe.Expand = 1_000_000;
+            var allDistances = new Dictionary<((int, int), (int, int)), ulong>();
 
-        public record Vector(long Row, long Col)
-        {
-            public override string ToString() => $"[{Row}, {Col}]";
+            foreach (var g in universe.Galaxies)
+            {
+                var distances = CalculateDistancesBetweenGalaxies(this.universe, g);
+                foreach (var k in distances.Keys)
+                {
+                    if (!allDistances.ContainsKey(k))
+                    {
+                        allDistances.Add(k, distances[k]);
+                    }
+                }
+            }
 
-            public Vector VectorTo(Vector other) => new(other.Row - Row, other.Col - Col);
-
-            public long NumberSteps { get; } = Math.Abs(Row) + Math.Abs(Col);
+            ulong total = 0;
+            foreach (var d in allDistances.Values)
+            {
+                total += d;
+            }
+            Console.WriteLine(total / 2);
         }
     }
 }

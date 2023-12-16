@@ -11,6 +11,7 @@ namespace AOC_2023
     {
         private string filename;
         private string[] puzzles;
+        private Dictionary<int, (int num, bool isRow)> resultTracker;
 
         public PointofIncidence(string filename) 
         {
@@ -20,60 +21,17 @@ namespace AOC_2023
         {
             var allText = File.ReadAllText(this.filename);
             this.puzzles = allText.Split(new string[] { Environment.NewLine + Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            resultTracker = new();
         }
 
         public void PartOne()
         {
-            var sum = 0L;
-            foreach (var puzzle in this.puzzles)
+            long sum = 0L;
+            for (int i = 0; i < this.puzzles.Length; i++)
             {
-                var first = puzzle.Split(Environment.NewLine);
-
-                // compare rows
-                for (var r = 0; r < first.Length - 1; r++)
-                {
-                    var foundPerfectReflection = true;
-                    var up = r;
-                    for (var down = r + 1; down < first.Length && up >= 0; down++)
-                    {
-                        if (first[up] != first[down])
-                        {
-                            foundPerfectReflection = false;
-                            break;
-                        }
-
-                        up--;
-                    }
-
-                    if (foundPerfectReflection)
-                    {
-                        sum += (r + 1) * 100;
-                        break;
-                    }
-                }
-
-                for (var column = 0; column < first[0].Length - 1; column++)
-                {
-                    var foundPerfectReflection = true;
-                    var left = column;
-                    for (var right = column + 1; right < first[0].Length && left >= 0; right++)
-                    {
-                        var leftString = GetColumn(first, left);
-                        var rightString = GetColumn(first, right);
-                        if (leftString != rightString)
-                        {
-                            foundPerfectReflection = false;
-                            break;
-                        }
-                        left--;
-                    }
-
-                    if (foundPerfectReflection)
-                    {
-                        sum += column + 1;
-                        break;
-                    }
-                }
+                string block = this.puzzles[i];
+                TryFindReflection2(block, i, out long res);
+                sum += res;
             }
 
             Console.WriteLine(sum);
@@ -91,20 +49,130 @@ namespace AOC_2023
 
         public void PartTwo()
         {
+            long sum = 0;
+            for (int j = 0; j < puzzles.Length; j++)
+            {
+                string block = puzzles[j];
+                for (int i = 0; i < block.Length; i++)
+                {
+                    if (!".#".Contains(block[i])) continue;
+                    StringBuilder sb = new StringBuilder(block);
+
+                    sb[i] = sb[i] == '.' ? '#' : '.';
+                    if (TryFindReflection2(sb.ToString(), j, out var res))
+                    {
+                        sum += res;
+                        break;
+                    }
+
+                }
+            }
+
+            Console.WriteLine(sum);
         }
 
-        public char[] GetColumn(char[,] matrix, int columnNumber)
+        private bool TryFindReflection2(string puzzle, int id, out long result)
         {
-            return Enumerable.Range(0, matrix.GetLength(0))
-                    .Select(x => matrix[x, columnNumber])
-                    .ToArray();
+            result = 0L;
+            var first = puzzle.Split(Environment.NewLine);
+
+            // compare rows
+            for (var r = 0; r < first.Length - 1; r++)
+            {
+                var foundPerfectReflection = true;
+                var up = r;
+                for (var down = r + 1; down < first.Length && up >= 0; down++)
+                {
+                    if (first[up] != first[down])
+                    {
+                        foundPerfectReflection = false;
+                        break;
+                    }
+
+                    up--;
+                }
+
+                if (foundPerfectReflection)
+                {
+                    if (resultTracker.TryGetValue(id, out (int num, bool isRow) x))
+                    {
+                        if (x.isRow && x.num == r) continue;
+                    }
+                    resultTracker[id] = (r, true);
+                    result = (r + 1) * 100;
+                    return true;
+                }
+            }
+
+            for (var column = 0; column < first[0].Length - 1; column++)
+            {
+                var foundPerfectReflection = true;
+                var left = column;
+                for (var right = column + 1; right < first[0].Length && left >= 0; right++)
+                {
+                    var leftString = GetColumn(first, left);
+                    var rightString = GetColumn(first, right);
+                    if (leftString != rightString)
+                    {
+                        foundPerfectReflection = false;
+                        break;
+                    }
+                    left--;
+                }
+
+                if (foundPerfectReflection)
+                {
+                    if (resultTracker.TryGetValue(id, out (int num, bool isRow) x))
+                    {
+                        if (!x.isRow && x.num == column) continue;
+                    }
+                    result = column + 1;
+                    resultTracker[id] = (column, false);
+                    return true;
+                }
+            }
+
+            result = 0;
+            return false;
         }
 
-        public char[] GetRow(char[,] matrix, int rowNumber)
+        private bool TryFindReflection(string block, int Id, out int result)
         {
-            return Enumerable.Range(0, matrix.GetLength(1))
-                    .Select(x => matrix[rowNumber, x])
-                    .ToArray();
+            var asRows = block.Split(Environment.NewLine);
+            var asColumns = block.SplitIntoColumns().ToList();
+
+            //Check rows
+            for (int i = 1; i < asRows.Length; i++)
+            {
+                if (asRows.Take(i).Reverse().Zip(asRows.Skip(i)).All(x => x.First == x.Second))
+                {
+                    if (resultTracker.TryGetValue(Id, out (int num, bool isRow) x))
+                    {
+                        if (x.isRow && x.num == i) continue;
+                    }
+                    resultTracker[Id] = (i, true);
+                    result = i * 100;
+                    return true;
+                }
+            }
+
+            for (int i = 1; i < asColumns.Count; i++)
+            {
+                if (asColumns.Take(i).Reverse().Zip(asColumns.Skip(i)).All(x => x.First == x.Second))
+                {
+                    if (resultTracker.TryGetValue(Id, out (int num, bool isRow) x))
+                    {
+                        if (!x.isRow && x.num == i) continue;
+
+                    }
+                    resultTracker[Id] = (i, false);
+                    result = i;
+                    return true;
+                }
+            }
+
+            result = 0;
+            return false;
         }
     }
 }

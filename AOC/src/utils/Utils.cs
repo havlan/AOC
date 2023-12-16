@@ -78,5 +78,63 @@ namespace AOC
         {
             return (a / GCD(a, b)) * b;
         }
+
+        public static string[] SplitIntoColumns(this string input)
+        {
+            var rows = input.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            int numColumns = rows.Max(x => x.Length);
+
+            var res = new string[numColumns];
+            for (int i = 0; i < numColumns; i++)
+            {
+                StringBuilder sb = new();
+                foreach (var row in rows)
+                {
+                    try
+                    {
+                        sb.Append(row[i]);
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        sb.Append(' ');
+                    }
+                }
+                res[i] = sb.ToString();
+            }
+            return res;
+        }
+
+        private static int CalcLevenshteinDistance(string a, string b)
+        {
+            if (string.IsNullOrEmpty(a) && string.IsNullOrEmpty(b))
+            {
+                return 0;
+            }
+            if (string.IsNullOrEmpty(a))
+            {
+                return b.Length;
+            }
+            if (string.IsNullOrEmpty(b))
+            {
+                return a.Length;
+            }
+            int lengthA = a.Length;
+            int lengthB = b.Length;
+            var distances = new int[lengthA + 1, lengthB + 1];
+            for (int i = 0; i <= lengthA; distances[i, 0] = i++) ;
+            for (int j = 0; j <= lengthB; distances[0, j] = j++) ;
+
+            for (int i = 1; i <= lengthA; i++)
+                for (int j = 1; j <= lengthB; j++)
+                {
+                    int cost = b[j - 1] == a[i - 1] ? 0 : 1;
+                    distances[i, j] = Math.Min
+                        (
+                        Math.Min(distances[i - 1, j] + 1, distances[i, j - 1] + 1),
+                        distances[i - 1, j - 1] + cost
+                        );
+                }
+            return distances[lengthA, lengthB];
+        }
     }
 }

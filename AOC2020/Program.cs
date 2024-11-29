@@ -27,6 +27,7 @@ namespace AOC
                 { 8,  async () => await Eight.Solve(basePath + @"\8.txt") },
                 { 9,  async () => await Nine.Solve(basePath + @"\9.txt") },
                 { 10, async () => await Ten.Solve(basePath + @"\10.txt") },
+                { 11, async () => await Eleven.Solve(basePath + @"\11.txt") },
             };
 
             if (solvers.TryGetValue(dayArgs, out var action))

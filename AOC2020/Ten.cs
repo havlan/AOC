@@ -17,14 +17,43 @@
             Console.WriteLine("PartOne={0}ms", sw1.ElapsedMilliseconds);
 
             Stopwatch sw2 = Stopwatch.StartNew();
-            // await TaskTwo(filename);
+            await TaskTwo(filename);
             sw2.Stop();
             Console.WriteLine("PartTwo={0}ms", sw2.ElapsedMilliseconds);
         }
 
         private static async Task TaskTwo(string filename)
         {
-            throw new NotImplementedException();
+            var p2AdaptersList = await Util<int>.GetDataAsList(filename, int.Parse);
+            var p2Adapters = p2AdaptersList.OrderBy(x => x).ToList();
+            var adapterRating = p2Adapters[^1] + 3;
+            p2Adapters.Add(adapterRating);
+
+            int prev = 0;
+            long result = 1;
+            int consecutiveCount = 1;
+
+            foreach (var adapter in p2Adapters)
+            {
+                if (adapter == prev + 1)
+                {
+                    consecutiveCount++;
+                }
+                else
+                {
+                    result *= consecutiveCount switch
+                    {
+                        2 => 2,
+                        3 => 4,
+                        4 => 7,
+                        _ => 1
+                    };
+                    consecutiveCount = 1;
+                }
+                prev = adapter;
+            }
+
+            Console.WriteLine(result);
         }
 
         private static async Task TaskOne(string filename)
